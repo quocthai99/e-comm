@@ -9,8 +9,9 @@ router.post('/register', userControllers.register)
 router.post('/login', userControllers.login)
 
 router.get('/users', [verifyAccessToken, isAdmin], userControllers.getUsers)
-router.get('/detail-user/:uid',verifyAccessToken, userControllers.getUser)
+router.get('/detail-user',verifyAccessToken, userControllers.getUser)
 router.post('/refresh-token', userControllers.refreshToken)
+router.post('/logout', userControllers.logout)
 router.put('/update-user/:uid', [verifyAccessToken, isAdmin], userControllers.updateUser)
 router.delete('/delete-user/:uid', [verifyAccessToken, isAdmin], userControllers.deleteUser)
 

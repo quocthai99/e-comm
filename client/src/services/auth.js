@@ -1,5 +1,8 @@
-import axios from 'axios'
 import axiosConfig from '../axiosConfig'
+import axios from 'axios'
+
+import path from '../ultils/path'
+import { loginFailed, loginStart, loginSuccess } from '../redux/auth/authSlice'
 
 export const apiRegister = async(payload) => {
     try {
@@ -9,22 +12,25 @@ export const apiRegister = async(payload) => {
             data: payload,
         })
 
-        return response
+        return response.data
     } catch (error) {
-        return error
+        return error.response.data
     }
 }
 
-export const apiLogin = async(payload) => {
+export const apiLogin = async(payload, dispatch, navigate) => {
+    dispatch(loginStart())
     try {
-        const response = await axiosConfig({
+        const response = await axios({
             method: 'post',
-            url: `api/user/login`,
+            url: `${process.env.REACT_APP_SERVER_URL}api/user/login`,
             data: payload,
         })
-
-        return response
+        console.log(response)
+        dispatch(loginSuccess(response.data))
+        navigate(`/${path.HOME}`)
+        
     } catch (error) {
-        return error
+        dispatch(loginFailed())
     }
 }

@@ -25,11 +25,7 @@ var userSchema = new mongoose.Schema({
         default:false,
         required:true
     },
-    access_token: {
-        type:String,
-        require: true
-    },
-    refresh_token: {
+    refreshToken: {
         type:String,
         require: true
     }

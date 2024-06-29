@@ -2,12 +2,15 @@ const express = require('express')
 const dotenv = require('dotenv')
 dotenv.config()
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
+
 
 const dbConnect = require('./src/config/dbConnect')
 const initRoutes = require('./src/routes')
 
 
 const app = express()
+app.use(cookieParser())
 
 app.use(cors({
     origin: process.env.CLIENT_URL,

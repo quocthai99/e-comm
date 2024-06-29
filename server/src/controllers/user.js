@@ -1,145 +1,101 @@
-const userServices = require('../services/user')
+const asyncHandler = require('express-async-handler');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
-const register = async(req, res) => {
-    try {
-        const { name, email, password, phone, confirmPassword } = req.body
-        if(!name || !email || !password || !phone || !confirmPassword) {
-            return res.status(400).json({
-                status: false,
-                message: 'Missing inputs'
-            })
-        } else if(password !== confirmPassword) {
-            return res.status(400).json({
-                status: false,
-                message: 'The password is equal confirmPassword'
-            })
-        }
+const User = require('../models/user');
+const {generateAccessToken, generateRefreshToken} = require('../middlewares/jwt')
 
-        const response = await userServices.register(req.body)
-        if(response) {
-            return res.status(200).json(response)
-        }
-    } catch (error) {
-        return res.status(404).json({
-            message: error
-        })
+const hashPassword = (password) => bcrypt.hashSync(password, 10);
+const register = asyncHandler(async (req, res) => {
+    const { name, email, password, phone, confirmPassword } = req.body;
+    if (password !== confirmPassword) throw new Error('The password is equal confirmPassword');
+    const user = await User.findOne({ email });
+
+    if (user) throw new Error('User has existed');
+    else {
+        const createdUser = await User.create({
+            name,
+            email,
+            password: hashPassword(password),
+            phone,
+        });
+        return res.status(200).json({
+            status: true,
+            message: 'Created user success',
+            createdUser,
+        });
     }
-}
+});
 
-const login = async(req, res) => {
-    try {
-        const { password, email } = req.body
-        if(!password || !email) {
-            return res.status(400).json({
-                status: false,
-                message: 'Missing inputs'
-            })
-        }
+const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
+    const user = await User.findOne({ email });
 
-        const response = await userServices.login(req.body)
-        if(response) {
-            return res.status(200).json(response)
-        }
-    } catch (error) {
-        return res.status(404).json({
-            message: error
-        })
+    const isCorrectPassword = bcrypt.compareSync(password, user.password)
+    if (user && isCorrectPassword) {
+        const { password, isAdmin, ...userData } = user.toObject();
+        const accessToken = generateAccessToken(user._id, isAdmin);
+        const refreshToken = generateRefreshToken(user._id);
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        await User.findByIdAndUpdate(user._id, { refreshToken }, { new: true } )
+        return res.status(200).json({
+            status: true,
+            user: userData,
+            accessToken,
+            message: 'Login is success'
+        });
+    } else {
+        throw new Error('Invalid credential!');
     }
-}
+});
 
-const updateUser = async(req, res) => {
-    try {
-        const { uid } = req.params
-        const { name, email, phone } = req.body
-        if(!uid) {
-            return res.status(400).json({
-                status: false,
-                message: 'User not found'
-            })
-        }
+const refreshToken = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies.refreshToken
+    if(!refreshToken) throw new Error('No refreshtoken in cookies. Please login')
 
-        if (!name || !email || !phone) {
-            return res.status(400).json({
-                status: false,
-                message: 'Missing inputs'
-            })
-        }
-
-        const response = await userServices.updateUser(uid, req.body)
-        return res.status(200).json(response)
-    } catch (error) {
-        return res.status(404).json({
-            message: error
-        })
-    }
-}
-
-const deleteUser = async(req, res) => {
-    try {
-        const { uid } = req.params
-        if(!uid) {
-            return res.status(400).json({
-                status: false,
-                message: 'User not found'
-            })
-        }
-
-        const response = await userServices.deleteUser(uid)
-        return res.status(200).json(response)
+    jwt.verify(refreshToken, process.env.JWT_SECRET, async(err, user) => {
+        if (err) throw new Error(err)
         
-    } catch (error) {
-        return res.status(404).json({
-            message: error
+        const newAccessToken = generateAccessToken(user._id, user.isAdmin)
+        const newRefreshToken = generateRefreshToken(user._id)
+
+        res.cookie('refreshToken', newRefreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        await User.findByIdAndUpdate(user._id, { newRefreshToken }, { new: true } )
+
+        return res.status(200).json({
+            status: true,
+            newAccessToken
         })
-    }
-}
+    })
+})
 
-const getUsers = async(req, res) => {
-    try {
-        const response = await userServices.getUsers()
-        return res.status(200).json(response)
-    } catch (error) {
-        return res.status(404).json({
-            message: error
-        })
-    }
-}
+const logout = asyncHandler(async(req, res) => {
+    const cookie = req.cookies
+    await User.findOneAndUpdate({ refreshToken: cookie.refreshToken}, {refreshToken: ''}, { new: true })
+    res.clearCookie('refreshToken')
+    return res.status(200).json({
+        status: true,
+        message: 'Logout is done'
+    })
+})
 
-const getUser = async(req, res) => {
-    try {
-        const { uid } = req.params
-        if(!uid) {
-            return res.status(400).json({
-                status: false,
-                message: 'User not found'
-            })
-        }
 
-        const response = await userServices.getUser(uid)
-        return res.status(200).json(response)
+const updateUser = async (req, res) => {};
 
-    } catch (error) {
-        return error
-    }
-}
+const deleteUser = async (req, res) => {};
 
-const refreshToken = async(req, res) => {
-    try {
-        const token = req.headers.authorization.split(' ')[1]
-        if(!token) {
-            return res.status(200).json({
-                status: false,
-                message: 'The token is required'
-            })
-        }
+const getUsers = async (req, res) => {};
 
-        const response = await userServices.refreshToken(token)
-        return res.status(200).json(response)
-        
-    } catch (error) {
-        return error
-    }
-}
+const getUser = asyncHandler(async(req, res) => {
+    const { _id } = req.user
+    const user = await User.findById(_id).select('-password')
+    if(!user) throw new Error('User not found')
+    return res.status(200).json({
+        status: true,
+        user
+    })
+})
+
 
 module.exports = {
     register,
@@ -148,5 +104,6 @@ module.exports = {
     deleteUser,
     getUsers,
     getUser,
-    refreshToken
-}
+    refreshToken,
+    logout
+};

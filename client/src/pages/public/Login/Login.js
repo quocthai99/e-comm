@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import Swal from 'sweetalert2'
 
 import Breadcrumbs from '../../../layouts/Breadcrumbs';
 import InputForm from '../../../components/Input/InputForm';
@@ -11,7 +10,7 @@ import path from '../../../ultils/path';
 import { apiLogin } from '../../../services/auth';
 import withBaseComponent from '../../../hocs/withBaseComponent';
 
-const Login = ({ navigate }) => {
+const Login = ({ dispatch, navigate }) => {
     const {
         register,
         handleSubmit,
@@ -19,11 +18,7 @@ const Login = ({ navigate }) => {
     } = useForm();
 
     const handleLogin = async(data) => {
-        const response = await apiLogin(data);
-        if ( response.status ) {
-            Swal.fire(response.message, 'Go to home', 'success')
-            navigate(`/${path.HOME}`)
-        }
+        apiLogin(data, dispatch, navigate);
     };
     return (
         <div>

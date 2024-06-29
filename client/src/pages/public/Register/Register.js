@@ -21,12 +21,12 @@ const Register = ({navigate}) => {
 
     const handleRegister = async(data) => {
         const response = await apiRegister(data)
-        
-        if (response.data.status) {
-            Swal.fire(response.data.message, "Go to Login", "success")
+        console.log(response)
+        if (response.status) {
+            Swal.fire(response.message, "Go to Login", "success")
             navigate(`/${path.LOGIN}`)
         } else {
-            Swal.fire("Something went wrong", response.data.message, "error")
+            Swal.fire("Something went wrong", response.message, "error")
         }
     };
 

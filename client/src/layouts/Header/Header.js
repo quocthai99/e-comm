@@ -1,15 +1,51 @@
-import React from 'react';
-import HeadlessTippy from '@tippyjs/react/headless';
-import 'tippy.js/dist/tippy.css';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import logo from '../../assets/logo_digital.png';
 import { FaUser, FaShoppingCart, FaKey } from 'react-icons/fa';
+import { AiOutlineLogout } from "react-icons/ai";
 import path from '../../ultils/path';
 import withBaseComponent from '../../hocs/withBaseComponent';
 
 import SearchInput from '../../components/SearchInput';
+import { Menu } from '../../components/Popper/Menu';
 
-const Header = ({ navigate }) => {
+const MENU_ITEMS = [
+    {
+        id: 0,
+        icon: <FaUser />,
+        title: 'Login',
+        to: `/${path.LOGIN}`,
+    },
+    {
+        id: 1,
+        icon: <FaKey />,
+        title: 'Register',
+        to: `/${path.REGISTER}`,
+    },
+];
+
+const MENU_ITEMS_PERSONAL = [
+    {
+        id: 0,
+        icon: <FaUser />,
+        title: 'Personal',
+        to: `/${path.PRIVATE}/${path.PERSONAL}`,
+    },
+    {
+        id: 1,
+        icon: <AiOutlineLogout />,
+        title: 'Logout',
+        to: '/',
+    },
+];
+
+let dataMenu
+
+const Header = () => {
+    const { currentUser } = useSelector((state) => state.auth.login);
+    currentUser ? dataMenu = MENU_ITEMS_PERSONAL : dataMenu = MENU_ITEMS
+
     return (
         <div className="w-full bg-primary text-white">
             <div className="w-main h-[70px] mx-auto flex items-center justify-between">
@@ -19,30 +55,19 @@ const Header = ({ navigate }) => {
                 </div>
 
                 <div className="flex">
-                    <HeadlessTippy
-                        interactive
-                        placement="bottom-start"
-                        render={(attrs) => (
-                            <div
-                                {...attrs}
-                                className="bg-primary shadow border border-sky-300 shadow-sky-500 text-white max-w-[200px] w-[200px] p-5 flex flex-col gap-5"
-                            >
-                                <div className="flex items-center gap-2 cursor-pointer">
-                                    <FaKey />
-                                    <span onClick={() => navigate(`/${path.REGISTER}`)} className="hover:underline">Đăng ký</span>
-                                </div>
-                                <div className="flex items-center gap-2 cursor-pointer">
-                                    <FaUser />
-                                    <span onClick={() => navigate(`/${path.LOGIN}`)} className="hover:underline">Đăng nhập</span>
-                                </div>
+                    <Menu items={dataMenu}>
+                        {currentUser ? (
+                            <div className="flex items-center gap-[10px] pr-5 cursor-pointer border-r border-[#70a5d0]">
+                                <FaUser size={20} />
+                                <span>{currentUser.name}</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-[10px] pr-5 cursor-pointer border-r border-[#70a5d0]">
+                                <FaUser size={20} />
+                                <span>Account</span>
                             </div>
                         )}
-                    >
-                        <div className="flex items-center gap-[10px] pr-5 cursor-pointer border-r border-[#70a5d0]">
-                            <FaUser size={20} />
-                            <span>Account</span>
-                        </div>
-                    </HeadlessTippy>
+                    </Menu>
 
                     <div className="flex items-center gap-[10px] pl-5 cursor-pointer ">
                         <FaShoppingCart size={20} />

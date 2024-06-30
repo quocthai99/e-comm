@@ -37,7 +37,6 @@ const authSlice = createSlice({
             state.login.isFetching = true
         },
         loginSuccess: (state, action) => {
-            console.log(action)
             state.login.isFetching = false
             state.login.success = true
             state.login.accessToken = action.payload.accessToken

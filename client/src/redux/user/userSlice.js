@@ -22,7 +22,7 @@ const userSlice = createSlice({
         },
         getCurrentSuccess: (state, action) => {
             state.getCurrent.isFetching = false
-            state.getCurrent.user = action.payload
+            state.getCurrent.user = action.payload.user
             state.getCurrent.success = true
             state.getCurrent.error = false
         },

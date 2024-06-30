@@ -36,7 +36,7 @@ const login = asyncHandler(async (req, res) => {
         const { password, isAdmin, ...userData } = user.toObject();
         const accessToken = generateAccessToken(user._id, isAdmin);
         const refreshToken = generateRefreshToken(user._id);
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true ,maxAge: 7 * 24 * 60 * 60 * 1000 });
         await User.findByIdAndUpdate(user._id, { refreshToken }, { new: true } )
         return res.status(200).json({
             status: true,
@@ -53,20 +53,24 @@ const refreshToken = asyncHandler(async (req, res) => {
     const refreshToken = req.cookies.refreshToken
     if(!refreshToken) throw new Error('No refreshtoken in cookies. Please login')
 
-    jwt.verify(refreshToken, process.env.JWT_SECRET, async(err, user) => {
-        if (err) throw new Error(err)
+    jwt.verify(refreshToken, process.env.JWT_SECRET, async (err, decode) => {
         
+        const user = await User.findOne({ _id: decode._id })
+        if(user.refreshToken !== refreshToken) throw new Error('refresh token is not equal refresh token in database')
+        if(err) throw new Error('Refreshtoken is wrong')
+            
         const newAccessToken = generateAccessToken(user._id, user.isAdmin)
         const newRefreshToken = generateRefreshToken(user._id)
 
-        res.cookie('refreshToken', newRefreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
-        await User.findByIdAndUpdate(user._id, { newRefreshToken }, { new: true } )
+        res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true ,maxAge: 7 * 24 * 60 * 60 * 1000 });
 
+        const updatedRefresh = await User.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken }, { new: true } )
         return res.status(200).json({
             status: true,
             newAccessToken
         })
     })
+    
 })
 
 const logout = asyncHandler(async(req, res) => {
@@ -88,7 +92,7 @@ const getUsers = async (req, res) => {};
 
 const getUser = asyncHandler(async(req, res) => {
     const { _id } = req.user
-    const user = await User.findById(_id).select('-password')
+    const user = await User.findById(_id).select('-password -refreshToken')
     if(!user) throw new Error('User not found')
     return res.status(200).json({
         status: true,

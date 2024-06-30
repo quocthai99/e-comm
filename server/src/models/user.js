@@ -20,6 +20,9 @@ var userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    avatar:{
+        type:String,
+    },
     isAdmin:{
         type:Boolean,
         default:false,

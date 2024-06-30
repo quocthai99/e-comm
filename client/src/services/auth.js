@@ -1,4 +1,3 @@
-import axiosConfig from '../axiosConfig'
 import axios from 'axios'
 
 import path from '../ultils/path'
@@ -25,8 +24,9 @@ export const apiLogin = async(payload, dispatch, navigate) => {
             method: 'post',
             url: `${process.env.REACT_APP_SERVER_URL}api/user/login`,
             data: payload,
+            withCredentials: true
         })
-        console.log(response)
+        
         dispatch(loginSuccess(response.data))
         navigate(`/${path.HOME}`)
         

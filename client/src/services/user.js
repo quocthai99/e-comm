@@ -12,7 +12,7 @@ export const apiGetCurrent = async(accessToken, dispatch) => {
             url: `api/user/detail-user`,
             headers: {
                 Authorization: `Bearer ${accessToken}`
-            }
+            },
         })
         dispatch(getCurrentSuccess(response.data))
         

@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 
-import path from './ultils/path';
+import path from './utils/path';
 
 import Public from './pages/public/Public';
 import Home from './pages/public/Home';
@@ -9,6 +9,9 @@ import Register from './pages/public/Register';
 
 import Private from './pages/private/Private';
 import Personal from './pages/private/Personal';
+
+import Admin from './pages/admin/Admin';
+import ManageUser from './pages/admin/ManageUser';
 
 
 function App() {
@@ -23,6 +26,10 @@ function App() {
 
                 <Route path={path.PRIVATE} element={<Private />}>
                     <Route path={path.PERSONAL} element={<Personal />} />
+                </Route>
+
+                <Route path={path.ADMIN} element={<Admin />}>
+                    <Route path={path.MANAGE_USER} element={<ManageUser />} />
                 </Route>
             </Routes>
         </div>

@@ -1,16 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import avatar from '../../../../assets/avatar.png'
+import logo from '../../../../assets/logo_digital.png'
 import path from '../../../../utils/path';
 import { AiOutlineDashboard, AiOutlineLogout } from 'react-icons/ai';
-import { useSelector } from 'react-redux';
 
 const PRIVATE_SIDEBAR = [
     {
         id: 0,
-        title: 'Personal',
-        to: `/${path.PRIVATE}/${path.PERSONAL}`,
+        title: 'Manage Users',
+        to: `/${path.ADMIN}/${path.MANAGE_USER}`,
         icon: <AiOutlineDashboard />,
     },
     {
@@ -25,17 +24,15 @@ const styleActive = 'flex items-center gap-2 p-5 bg-hprimary cursor-pointer'
 const styleNotActive = 'flex items-center gap-2 p-5 hover:bg-hprimary cursor-pointer'
 
 const Sidebar = () => {
-    const { user } = useSelector(state => state.user.getCurrent)
     
     return (
         <div className="fixed w-[400px] shadow-sm shadow-white inset-0 bg-primary text-white">
-            <div className="p-5 flex flex-col gap-10">
-                <div className="flex flex-col gap-2 items-center text-2xl font-bold">
-                    <img src={ user.avatar } alt='logo' className='w-20 h-20 object-cover' />
-                    <h4>{user.name}</h4>
+            <div className="p-5">
+                <div className="mx-auto">
+                    <img src={logo} alt='logo' />
                 </div>
 
-                <div className='font-medium text-xl'>
+                <div className='mt-10 font-medium text-2xl'>
                     {PRIVATE_SIDEBAR.map(item => (
                         <NavLink key={item.id} to={item.to} className={({isActive}) => isActive ? styleActive : styleNotActive}>
                             <span>{item.icon}</span>

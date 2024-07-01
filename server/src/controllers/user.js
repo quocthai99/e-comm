@@ -33,11 +33,11 @@ const login = asyncHandler(async (req, res) => {
 
     const isCorrectPassword = bcrypt.compareSync(password, user.password)
     if (user && isCorrectPassword) {
-        const { password, isAdmin, ...userData } = user.toObject();
-        const accessToken = generateAccessToken(user._id, isAdmin);
+        const accessToken = generateAccessToken(user._id, user.isAdmin);
         const refreshToken = generateRefreshToken(user._id);
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true ,maxAge: 7 * 24 * 60 * 60 * 1000 });
-        await User.findByIdAndUpdate(user._id, { refreshToken }, { new: true } )
+        const userData = await User.findByIdAndUpdate(user._id, { refreshToken }, { new: true } ).select('-refreshToken -password')
+        
         return res.status(200).json({
             status: true,
             user: userData,
@@ -92,12 +92,29 @@ const getUsers = async (req, res) => {};
 
 const getUser = asyncHandler(async(req, res) => {
     const { _id } = req.user
+    console.log('id:', _id )
     const user = await User.findById(_id).select('-password -refreshToken')
+    console.log('user:', user )
     if(!user) throw new Error('User not found')
     return res.status(200).json({
         status: true,
         user
     })
+})
+
+const updateCurrent = asyncHandler(async(req, res) => {
+    const { _id } = req.user
+    if (req.file) req.body.avatar = req.file.path
+    const updatedCurrent = await User.findByIdAndUpdate(_id, req.body, {new: true}).select('-refreshToken')
+    const newAccessToken = generateAccessToken(updatedCurrent._id, updatedCurrent.isAdmin, process.env.JWT_SECRET)
+    if (updatedCurrent) {
+        return res.status(200).json({ 
+            status: true,
+            message: 'Updated current',
+            user: updatedCurrent,
+            accessToken: newAccessToken
+        })
+    }
 })
 
 
@@ -109,5 +126,6 @@ module.exports = {
     getUsers,
     getUser,
     refreshToken,
-    logout
+    logout,
+    updateCurrent
 };

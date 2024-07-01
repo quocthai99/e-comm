@@ -2,11 +2,29 @@ import React from 'react';
 import HeadlessTippy from '@tippyjs/react/headless';
 import 'tippy.js/dist/tippy.css';
 import MenuItem from './MenuItem';
+import { apiLogout } from '../../../services/auth';
+import withBaseComponent from '../../../hocs/withBaseComponent';
+import { useSelector } from 'react-redux';
 
-const Menu = ({ children, items }) => {
-
-    const renderItems = () => items.map(item =>  <MenuItem key={item.id} data={item} />)
+const Menu = ({ children, items, dispatch }) => {
+    const { accessToken } = useSelector(state => state.auth.login)
     
+    const renderItems = () =>
+        items.map((item) => {
+            return (
+                <MenuItem
+                    onClick={() => {
+                        if (item.title === 'Logout') {
+                            apiLogout(accessToken, dispatch)
+                        }
+                    }}
+                    key={item.id}
+                    data={item}
+                />
+            );
+        });
+        
+
     return (
         <div>
             <HeadlessTippy
@@ -24,4 +42,4 @@ const Menu = ({ children, items }) => {
     );
 };
 
-export default Menu;
+export default withBaseComponent(Menu);

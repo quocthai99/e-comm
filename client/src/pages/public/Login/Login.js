@@ -6,7 +6,7 @@ import Breadcrumbs from '../../../layouts/Breadcrumbs';
 import InputForm from '../../../components/Input/InputForm';
 import Button from '../../../components/Button/Button';
 
-import path from '../../../ultils/path';
+import path from '../../../utils/path';
 import { apiLogin } from '../../../services/auth';
 import withBaseComponent from '../../../hocs/withBaseComponent';
 

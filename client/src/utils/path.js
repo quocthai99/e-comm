@@ -6,7 +6,11 @@ const path = {
 
     // member
     PRIVATE: 'private',
-    PERSONAL: 'personal'
+    PERSONAL: 'personal',
+
+    // admin
+    ADMIN: 'admin',
+    MANAGE_USER: 'manage-user',
 
 };
 

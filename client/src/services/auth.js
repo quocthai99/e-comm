@@ -1,7 +1,8 @@
 import axios from 'axios'
+import axiosConfig from '../axiosConfig'
 
-import path from '../ultils/path'
-import { loginFailed, loginStart, loginSuccess } from '../redux/auth/authSlice'
+import path from '../utils/path'
+import { loginFailed, loginStart, loginSuccess, logoutStart, logoutSuccess, logoutFailed } from '../redux/auth/authSlice'
 
 export const apiRegister = async(payload) => {
     try {
@@ -32,5 +33,24 @@ export const apiLogin = async(payload, dispatch, navigate) => {
         
     } catch (error) {
         dispatch(loginFailed())
+    }
+}
+
+export const apiLogout = async( accessToken, dispatch ) => {
+    dispatch(logoutStart())
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: `api/user/logout`,
+            withCredentials: true,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
+        
+        dispatch(logoutSuccess(response.data))
+        
+    } catch (error) {
+        dispatch(logoutFailed())
     }
 }

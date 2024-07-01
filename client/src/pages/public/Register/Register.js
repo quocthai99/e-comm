@@ -9,7 +9,7 @@ import Breadcrumbs from '../../../layouts/Breadcrumbs';
 import InputForm from '../../../components/Input';
 import Button from '../../../components/Button/Button';
 
-import path from '../../../ultils/path';
+import path from '../../../utils/path';
 import { apiRegister } from '../../../services/auth';
 
 const Register = ({navigate}) => {

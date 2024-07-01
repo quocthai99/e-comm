@@ -2,9 +2,11 @@ import axiosConfig from '../axiosConfig'
 import axios from 'axios'
 
 import { getCurrentFaild, getCurrentStart, getCurrentSuccess } from '../redux/user/userSlice'
+import { loginSuccess } from '../redux/auth/authSlice'
 
 export const apiGetCurrent = async(accessToken, dispatch) => {
     dispatch(getCurrentStart())
+    
     try {
         const response = await axiosConfig({
             method: 'get',
@@ -14,6 +16,7 @@ export const apiGetCurrent = async(accessToken, dispatch) => {
                 Authorization: `Bearer ${accessToken}`
             },
         })
+        
         dispatch(getCurrentSuccess(response.data))
         
     } catch (error) {
@@ -30,6 +33,24 @@ export const apiRefresh = async() => {
             withCredentials: true
         })
         return response.data
+    } catch (error) {
+        return error
+    }
+}
+
+export const apiUpdateCurrent = async(accessToken, data, dispatch) => {
+    try {
+        const response = await axiosConfig({
+            method: 'put',
+            url: `api/user/update-current`,
+            data,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+        
+        dispatch(loginSuccess(response.data))
     } catch (error) {
         return error
     }

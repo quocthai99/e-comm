@@ -8,15 +8,14 @@ import Sidebar from '../layouts/Sidebar';
 import { useSelector } from 'react-redux';
 
 const Private = ({ dispatch }) => {
-    const { accessToken, currentUser } = useSelector((state) => state.auth.login);
+    const { currentUser } = useSelector((state) => state.auth.login);
     
     useEffect(() => {
-        console.log('get current again', accessToken, currentUser)
-        if (accessToken) {
-            apiGetCurrent(accessToken, dispatch);
+        if (currentUser) {
+            apiGetCurrent(currentUser.accessToken, dispatch);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accessToken, currentUser]);
+    }, [currentUser]);
 
     return (
         <div className="relative">

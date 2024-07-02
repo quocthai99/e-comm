@@ -29,19 +29,19 @@ const register = asyncHandler(async (req, res) => {
 
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
+    
     const user = await User.findOne({ email });
-
+    
     const isCorrectPassword = bcrypt.compareSync(password, user.password)
     if (user && isCorrectPassword) {
         const accessToken = generateAccessToken(user._id, user.isAdmin);
         const refreshToken = generateRefreshToken(user._id);
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true ,maxAge: 7 * 24 * 60 * 60 * 1000 });
-        const userData = await User.findByIdAndUpdate(user._id, { refreshToken }, { new: true } ).select('-refreshToken -password')
+        const userData = await User.findByIdAndUpdate(user._id, { refreshToken, accessToken }, { new: true } ).select('-refreshToken -password')
         
         return res.status(200).json({
             status: true,
             user: userData,
-            accessToken,
             message: 'Login is success'
         });
     } else {
@@ -52,10 +52,10 @@ const login = asyncHandler(async (req, res) => {
 const refreshToken = asyncHandler(async (req, res) => {
     const refreshToken = req.cookies.refreshToken
     if(!refreshToken) throw new Error('No refreshtoken in cookies. Please login')
-
+        console.log(refreshToken, '====refresh')
     jwt.verify(refreshToken, process.env.JWT_SECRET, async (err, decode) => {
-        
         const user = await User.findOne({ _id: decode._id })
+        console.log(user, '=> user refresh')
         if(user.refreshToken !== refreshToken) throw new Error('refresh token is not equal refresh token in database')
         if(err) throw new Error('Refreshtoken is wrong')
             
@@ -64,7 +64,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 
         res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true ,maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-        const updatedRefresh = await User.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken }, { new: true } )
+        await User.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken, accessToken: newAccessToken }, { new: true } )
         return res.status(200).json({
             status: true,
             newAccessToken
@@ -75,7 +75,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 
 const logout = asyncHandler(async(req, res) => {
     const cookie = req.cookies
-    await User.findOneAndUpdate({ refreshToken: cookie.refreshToken}, {refreshToken: ''}, { new: true })
+    await User.findOneAndUpdate({ refreshToken: cookie.refreshToken}, {refreshToken: '', accessToken: ''}, { new: true })
     res.clearCookie('refreshToken')
     return res.status(200).json({
         status: true,
@@ -88,13 +88,37 @@ const updateUser = async (req, res) => {};
 
 const deleteUser = async (req, res) => {};
 
-const getUsers = async (req, res) => {};
+const getUsers = asyncHandler(async (req, res) => {
+    const queryObj = { ...req.query }
+    const excludedFields = ['page', 'limit', 'fields', 'sort']
+    excludedFields.forEach(el => delete queryObj[el])
+
+    let queryString = JSON.stringify(queryObj)
+    queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
+    const query = JSON.parse(queryString)
+    
+    if (queryObj.q) {
+        delete query.q
+        query['$or'] = [
+                {name: { $regex: queryObj.q, $options: 'i' }},
+                {email: { $regex: queryObj.q, $options: 'i' }},
+            ]
+    }
+    
+    let queries = User.find(query)
+
+    const users = await queries
+    return res.status(200).json({
+        status: true,
+        users,
+    })
+})
 
 const getUser = asyncHandler(async(req, res) => {
     const { _id } = req.user
-    console.log('id:', _id )
+    console.log(_id, '=> id')
     const user = await User.findById(_id).select('-password -refreshToken')
-    console.log('user:', user )
+    console.log(user, '=> current')
     if(!user) throw new Error('User not found')
     return res.status(200).json({
         status: true,

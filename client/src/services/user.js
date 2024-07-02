@@ -6,7 +6,7 @@ import { loginSuccess } from '../redux/auth/authSlice'
 
 export const apiGetCurrent = async(accessToken, dispatch) => {
     dispatch(getCurrentStart())
-    
+    console.log('apiGetCurrent:', accessToken )
     try {
         const response = await axiosConfig({
             method: 'get',
@@ -16,7 +16,7 @@ export const apiGetCurrent = async(accessToken, dispatch) => {
                 Authorization: `Bearer ${accessToken}`
             },
         })
-        
+        console.log(response.data, '=> dispatch current')
         dispatch(getCurrentSuccess(response.data))
         
     } catch (error) {
@@ -51,6 +51,23 @@ export const apiUpdateCurrent = async(accessToken, data, dispatch) => {
         })
         
         dispatch(loginSuccess(response.data))
+    } catch (error) {
+        return error
+    }
+}
+
+export const apiGetUsers = async(accessToken, params) => {
+    try {
+        const response = await axiosConfig({
+            method: 'get',
+            url: `api/user/users`,
+            params,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true
+        })
+        return response.data
     } catch (error) {
         return error
     }

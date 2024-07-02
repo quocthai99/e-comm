@@ -13,15 +13,18 @@ const instance = axios.create({
 instance.interceptors.request.use(
     async (config) => {
         let date = new Date();
-        const { accessToken, currentUser } = store.getState().auth.login;
-        const decodeToken = jwtDecode(accessToken);
+        const { currentUser } = store.getState().auth.login;
+        const decodeToken = jwtDecode(currentUser.accessToken);
         if (decodeToken.exp < date.getTime() / 1000) {
             const response = await apiRefresh();
             const newAccessToken = response.newAccessToken;
             const data = {
-                user: currentUser,
-                accessToken: newAccessToken,
+                user: {
+                    ...currentUser,
+                accessToken: newAccessToken
+                }
             };
+            console.log(data, '=> data config')
             store.dispatch(loginSuccess(data));
             config.headers['Authorization'] = `Bearer ${newAccessToken}`
         }

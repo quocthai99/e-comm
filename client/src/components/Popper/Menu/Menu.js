@@ -7,7 +7,7 @@ import withBaseComponent from '../../../hocs/withBaseComponent';
 import { useSelector } from 'react-redux';
 
 const Menu = ({ children, items, dispatch }) => {
-    const { accessToken } = useSelector(state => state.auth.login)
+    const { currentUser } = useSelector(state => state.auth.login)
     
     const renderItems = () =>
         items.map((item) => {
@@ -15,7 +15,7 @@ const Menu = ({ children, items, dispatch }) => {
                 <MenuItem
                     onClick={() => {
                         if (item.title === 'Logout') {
-                            apiLogout(accessToken, dispatch)
+                            apiLogout(currentUser.accessToken, dispatch)
                         }
                     }}
                     key={item.id}

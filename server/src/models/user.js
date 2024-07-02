@@ -31,6 +31,10 @@ var userSchema = new mongoose.Schema({
     refreshToken: {
         type:String,
         require: true
+    },
+    accessToken: {
+        type:String,
+        require: true
     }
 }, {
     timestamps: true

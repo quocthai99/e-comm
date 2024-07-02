@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import avatar from '../../../../assets/avatar.png'
 import path from '../../../../utils/path';
 import { AiOutlineDashboard, AiOutlineLogout } from 'react-icons/ai';
 import { useSelector } from 'react-redux';

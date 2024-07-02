@@ -10,7 +10,7 @@ const initialState = {
     login: {
         isFetching: false,
         currentUser: null,
-        accessToken: null,
+        // accessToken: null,
         error: false,
         success: false
     },
@@ -41,9 +41,10 @@ const authSlice = createSlice({
             state.login.isFetching = true
         },
         loginSuccess: (state, action) => {
+            console.log(action)
             state.login.isFetching = false
             state.login.success = true
-            state.login.accessToken = action.payload.accessToken
+            // state.login.accessToken = action.payload.accessToken
             state.login.currentUser = action.payload.user
         },
         loginFailed: (state) => {
@@ -57,7 +58,7 @@ const authSlice = createSlice({
             state.logout.isFetching = false
             state.logout.message = action.payload.message
             state.login.currentUser = null
-            state.login.accessToken = null
+            // state.login.accessToken = null
             state.login.success = false
         },
         logoutFailed: (state) => {

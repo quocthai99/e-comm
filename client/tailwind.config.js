@@ -9,6 +9,9 @@ module.exports = {
         text: '#505050',
         errorColor: '#ff3333'
       },
+      backgroundColor: {
+        overlay: 'rgba(0, 0, 0, 0.3)',
+      },
       width: {
         main: '1180px'
       }

@@ -11,7 +11,7 @@ import { apiUpdateCurrent } from '../../../services/user';
 
 const Personal = ({ dispatch }) => {
     const { user } = useSelector(state => state.user.getCurrent)
-    const { accessToken } = useSelector(state => state.auth.login)
+    const { currentUser } = useSelector(state => state.auth.login)
     const [preview, setPreview] = useState(null)
     
     const {
@@ -55,7 +55,7 @@ const Personal = ({ dispatch }) => {
             formData.append(item, payload[item])
         }
         
-        apiUpdateCurrent(accessToken, formData, dispatch)
+        apiUpdateCurrent(currentUser.accessToken, formData, dispatch)
     };
     return (
         <div className="bg-white h-screen">

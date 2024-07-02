@@ -26,13 +26,13 @@ const styleNotActive = 'flex items-center gap-2 p-5 hover:bg-hprimary cursor-poi
 const Sidebar = () => {
     
     return (
-        <div className="fixed w-[400px] shadow-sm shadow-white inset-0 bg-primary text-white">
-            <div className="p-5">
-                <div className="mx-auto">
-                    <img src={logo} alt='logo' />
+        <div className="fixed w-[300px] shadow-sm shadow-white inset-0 bg-primary text-white">
+            <div className="p-5 flex flex-col gap-10">
+                <div className="flex flex-col gap-2 items-center text-2xl font-bold">
+                    <img src={ logo } alt='logo'  />
                 </div>
 
-                <div className='mt-10 font-medium text-2xl'>
+                <div className='font-medium text-xl'>
                     {PRIVATE_SIDEBAR.map(item => (
                         <NavLink key={item.id} to={item.to} className={({isActive}) => isActive ? styleActive : styleNotActive}>
                             <span>{item.icon}</span>

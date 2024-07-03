@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 const Admin = ({ dispatch }) => {
     const { currentUser } = useSelector((state) => state.auth.login);
-    const { user } = useSelector(state => state.user.getCurrent)
+    const { user } = useSelector(state => state.auth.getCurrent)
     console.log({currentUser, user})
     useEffect(() => {
             apiGetCurrent(currentUser.accessToken, dispatch);

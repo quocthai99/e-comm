@@ -1,29 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { apiGetUsers } from '../../../services/user';
+import { apiDeleteUser, apiGetUsers } from '../../../services/user';
 
 import SearchInput from '../../../components/SearchInput'
 import EditUser from '../layouts/EditUser';
 import useDebounce from '../../../hook/useDebounce'
+import withBaseComponent from '../../../hocs/withBaseComponent' 
+import { Pagination } from '../../../components/Pagination';
 
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
-const ManageUser = () => {
+const ManageUser = ({ dispatch }) => {
     const { currentUser } = useSelector((state) => state.auth.login);
-
-    const { user } = useSelector((state) => state.user.getCurrent);
-    const [users, setUsers] = useState(null);
+    const { user } = useSelector((state) => state.auth.getCurrent);
+    const { users } = useSelector((state) => state.user.getUsers);
+    
     const [searchUser, setSearchUser] = useState({
         q: ''
     })
     const [editUser, setEditUser] = useState(null)
     
     const queriesDebounce = useDebounce(searchUser.q, 1000)
-    const fetchDataUsers = async (params) => {
-        const response = await apiGetUsers(currentUser.accessToken, params)
-        setUsers(response.users)
+    const fetchDataUsers = (params) => {
+        apiGetUsers(currentUser.accessToken, params, dispatch)
     };
+
+    const handleDeleteUser = async(uid) => {
+        const response = await apiDeleteUser(currentUser.accessToken,uid)
+        if(response.status) {
+            users.filter(user => user._id !== response.deletedUser._id)
+        }
+    }
     
     useEffect(() => {
         const params = {}
@@ -33,7 +41,7 @@ const ManageUser = () => {
     }, [user, queriesDebounce]);
 
     return (
-        <div className="bg-white h-screen">
+        <div className="bg-white ">
             {editUser &&  <EditUser user={editUser} />}
             <div className="text-primary mx-10">
                 <h1 className="text-3xl font-bold py-5 border-b border-primary ">
@@ -89,7 +97,7 @@ const ManageUser = () => {
                                                 <div onClick={() => setEditUser(user)} className='cursor-pointer' title="Edit">
                                                     <FaEdit color="#339CDE" />
                                                 </div>
-                                                <div className='cursor-pointer' title='Remove'>
+                                                <div onClick={() => handleDeleteUser(user._id)} className='cursor-pointer' title='Remove'>
                                                     <FaTrash color="orange" />
                                                 </div>
                                             </div>
@@ -128,8 +136,9 @@ const ManageUser = () => {
                             ))}
                 </div>
             </div>
+
         </div>
     );
 };
 
-export default ManageUser;
+export default withBaseComponent(ManageUser);

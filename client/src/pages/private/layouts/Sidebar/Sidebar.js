@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import path from '../../../../utils/path';
+import avatar from '../../../../assets/avatar.png'
 import { AiOutlineDashboard, AiOutlineLogout } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 
@@ -24,13 +25,13 @@ const styleActive = 'flex items-center gap-2 p-5 bg-hprimary cursor-pointer'
 const styleNotActive = 'flex items-center gap-2 p-5 hover:bg-hprimary cursor-pointer'
 
 const Sidebar = () => {
-    const { user } = useSelector(state => state.user.getCurrent)
-    
+    const { user } = useSelector(state => state.auth.getCurrent)
+
     return (
         <div className="fixed w-[400px] shadow-sm shadow-white inset-0 bg-primary text-white">
             <div className="p-5 flex flex-col gap-10">
                 <div className="flex flex-col gap-2 items-center text-2xl font-bold">
-                    <img src={ user.avatar } alt='logo' className='w-20 h-20 object-cover' />
+                    <img src={ user.avatar || avatar } alt='logo' className='w-20 h-20 object-cover' />
                     <h4>{user.name}</h4>
                 </div>
 

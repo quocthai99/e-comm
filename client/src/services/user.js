@@ -1,8 +1,8 @@
 import axiosConfig from '../axiosConfig'
 import axios from 'axios'
 
-import { getCurrentFaild, getCurrentStart, getCurrentSuccess } from '../redux/user/userSlice'
-import { loginSuccess } from '../redux/auth/authSlice'
+import {  getUsersFaild, getUsersStart, getUsersSuccess } from '../redux/user/userSlice'
+import { loginSuccess, getCurrentFaild, getCurrentStart, getCurrentSuccess } from '../redux/auth/authSlice'
 
 export const apiGetCurrent = async(accessToken, dispatch) => {
     dispatch(getCurrentStart())
@@ -47,7 +47,6 @@ export const apiUpdateCurrent = async(accessToken, data, dispatch) => {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
-            withCredentials: true
         })
         
         dispatch(loginSuccess(response.data))
@@ -56,7 +55,8 @@ export const apiUpdateCurrent = async(accessToken, data, dispatch) => {
     }
 }
 
-export const apiGetUsers = async(accessToken, params) => {
+export const apiGetUsers = async(accessToken, params, dispatch) => {
+    dispatch(getUsersStart())
     try {
         const response = await axiosConfig({
             method: 'get',
@@ -65,7 +65,23 @@ export const apiGetUsers = async(accessToken, params) => {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
-            withCredentials: true
+        })
+        dispatch(getUsersSuccess(response.data))
+        return response.data
+    } catch (error) {
+        dispatch(getUsersFaild())
+        return error
+    }
+}
+
+export const apiDeleteUser = async(accessToken, uid) => {
+    try {
+        const response = await axiosConfig({
+            method: 'delete',
+            url: `api/user/delete-user/${uid}`,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
         })
         return response.data
     } catch (error) {

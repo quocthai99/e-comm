@@ -29,10 +29,13 @@ const register = asyncHandler(async (req, res) => {
 
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
-    
+    console.log({ email, password })
     const user = await User.findOne({ email });
+    if (!user) throw new Error('User is not existed! Please register')
     
     const isCorrectPassword = bcrypt.compareSync(password, user.password)
+    if(!isCorrectPassword) throw new Error('Password wrong')
+
     if (user && isCorrectPassword) {
         const accessToken = generateAccessToken(user._id, user.isAdmin);
         const refreshToken = generateRefreshToken(user._id);
@@ -86,7 +89,18 @@ const logout = asyncHandler(async(req, res) => {
 
 const updateUser = async (req, res) => {};
 
-const deleteUser = async (req, res) => {};
+const deleteUser = asyncHandler(async (req, res) => {
+    const { uid } = req.params
+    if (!uid) throw new Error('User is not existed')
+    const deletedUser = await User.findByIdAndDelete(uid)
+console.log(deletedUser, '==> deletedd User')
+    if (!deletedUser) throw new Error('Delete failed')
+    return res.status(200).json({
+        status: true,
+        message: 'Deleted User',
+        deletedUser
+    })
+})
 
 const getUsers = asyncHandler(async (req, res) => {
     const queryObj = { ...req.query }
@@ -107,9 +121,17 @@ const getUsers = asyncHandler(async (req, res) => {
     
     let queries = User.find(query)
 
+    const page = req.query.page * 1 || 1
+    const limit = req.query.limit * 1 || 10
+    const skip = (page - 1) * limit
+
+    queries = queries.skip(skip).limit(limit)
+
+    const counts = await User.find(query).countDocuments()
     const users = await queries
     return res.status(200).json({
         status: true,
+        counts,
         users,
     })
 })

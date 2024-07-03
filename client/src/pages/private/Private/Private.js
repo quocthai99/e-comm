@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 
 const Private = ({ dispatch }) => {
     const { currentUser } = useSelector((state) => state.auth.login);
+    console.log('currentUser acc', currentUser.accessToken)
     
     useEffect(() => {
         if (currentUser) {

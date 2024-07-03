@@ -10,15 +10,19 @@ const initialState = {
     login: {
         isFetching: false,
         currentUser: null,
-        // accessToken: null,
         error: false,
-        success: false
+        success: false,
     },
     logout: {
         isFetching: false,
         error: false,
-        message: ''
-    }
+    },
+    getCurrent: {
+        isFetching: false,
+        success: false,
+        user: null,
+        error: false
+    },
 }
 
 const authSlice = createSlice({
@@ -44,7 +48,6 @@ const authSlice = createSlice({
             console.log(action)
             state.login.isFetching = false
             state.login.success = true
-            // state.login.accessToken = action.payload.accessToken
             state.login.currentUser = action.payload.user
         },
         loginFailed: (state) => {
@@ -56,17 +59,32 @@ const authSlice = createSlice({
         },
         logoutSuccess: (state, action) => {
             state.logout.isFetching = false
-            state.logout.message = action.payload.message
             state.login.currentUser = null
-            // state.login.accessToken = null
+            state.getCurrent.user = null
             state.login.success = false
         },
         logoutFailed: (state) => {
             state.logout.isFetching = false
             state.logout.error = true
         },
+        getCurrentStart: (state) => {
+            state.getCurrent.isFetching = true
+        },
+        getCurrentSuccess: (state, action) => {
+            console.log(action.payload)
+            state.getCurrent.isFetching = false
+            state.getCurrent.user = action.payload.user
+            state.getCurrent.success = true
+            state.getCurrent.error = false
+        },
+        getCurrentFaild: (state) => {
+            state.getCurrent.isFetching = false
+            state.getCurrent.user = null
+            state.getCurrent.success = false
+            state.getCurrent.error = true
+        },
     }
 })
 
-export const { logoutStart, logoutSuccess, logoutFailed, registerStart, registerSuccess, registerFailed, loginStart, loginSuccess, loginFailed } = authSlice.actions
+export const { logoutStart, logoutSuccess, logoutFailed, registerStart, registerSuccess, registerFailed, loginStart, loginSuccess, loginFailed, getCurrentStart, getCurrentSuccess, getCurrentFaild } = authSlice.actions
 export default authSlice.reducer

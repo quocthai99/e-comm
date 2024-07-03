@@ -9,6 +9,7 @@ import Button from '../../../components/Button/Button';
 import path from '../../../utils/path';
 import { apiLogin } from '../../../services/auth';
 import withBaseComponent from '../../../hocs/withBaseComponent';
+import { apiGetCurrent } from '../../../services/user';
 
 const Login = ({ dispatch, navigate }) => {
     const {
@@ -16,9 +17,13 @@ const Login = ({ dispatch, navigate }) => {
         handleSubmit,
         formState: { errors },
     } = useForm();
-
+    
     const handleLogin = async(data) => {
-        apiLogin(data, dispatch, navigate);
+        const response = await apiLogin(data, dispatch, navigate);
+        if (response) {
+            apiGetCurrent(response.user.accessToken, dispatch)
+        }
+
     };
     return (
         <div>

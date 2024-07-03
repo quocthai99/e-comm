@@ -8,9 +8,10 @@ import withBaseComponent from '../../../hocs/withBaseComponent'
 
 import { toBase64 } from '../../../utils/func'
 import { apiUpdateCurrent } from '../../../services/user';
+import avatar from '../../../assets/avatar.png'
 
 const Personal = ({ dispatch }) => {
-    const { user } = useSelector(state => state.user.getCurrent)
+    const { user } = useSelector(state => state.auth.getCurrent)
     const { currentUser } = useSelector(state => state.auth.login)
     const [preview, setPreview] = useState(null)
     
@@ -101,7 +102,7 @@ const Personal = ({ dispatch }) => {
                         <span className="font-medium">Profile image:</span>
                         <label htmlFor="avatar">
                             <img
-                                src={preview}
+                                src={preview || avatar}
                                 alt="avatar"
                                 className="w-10 h-10 object-cover rounded-full cursor-pointer"
                             />

@@ -12,19 +12,19 @@ const persistConfig = {
 const authConfig = {
     ...persistConfig,
     key: 'auth',
-    whitelist: ['login'],
+    whitelist: ['login', 'getCurrent'],
 };
 
-const userConfig = {
-    ...persistConfig,
-    key: 'user',
-    whitelist: ['getCurrent'],
-};
+// const userConfig = {
+//     ...persistConfig,
+//     key: 'user',
+//     whitelist: ['getCurrent'],
+// };
 
 const store = configureStore({
     reducer: {
         auth: persistReducer(authConfig, authSlice),
-        user: persistReducer(userConfig, userSlice),
+        user: userSlice,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

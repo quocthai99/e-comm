@@ -30,7 +30,7 @@ export const apiLogin = async(payload, dispatch, navigate) => {
         
         dispatch(loginSuccess(response.data))
         navigate(`/${path.HOME}`)
-        
+        return response.data
     } catch (error) {
         dispatch(loginFailed())
     }

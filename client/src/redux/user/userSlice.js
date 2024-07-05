@@ -1,17 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    // getCurrent: {
-    //     isFetching: false,
-    //     success: false,
-    //     user: null,
-    //     error: false
-    // },
     getUsers: {
         isFetching: false,
         success: false,
         users: null,
-        error: false
+        error: false,
+        counts: null
     },
 }
 
@@ -19,22 +14,6 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        // getCurrentStart: (state) => {
-        //     state.getCurrent.isFetching = true
-        // },
-        // getCurrentSuccess: (state, action) => {
-        //     console.log(action.payload)
-        //     state.getCurrent.isFetching = false
-        //     state.getCurrent.user = action.payload.user
-        //     state.getCurrent.success = true
-        //     state.getCurrent.error = false
-        // },
-        // getCurrentFaild: (state) => {
-        //     state.getCurrent.isFetching = false
-        //     state.getCurrent.user = null
-        //     state.getCurrent.success = false
-        //     state.getCurrent.error = true
-        // },
         getUsersStart: (state) => {
             state.getUsers.isFetching = true
         },
@@ -43,6 +22,7 @@ const userSlice = createSlice({
             state.getUsers.users = action.payload.users.filter(user => !user.isAdmin)
             state.getUsers.success = true
             state.getUsers.error = false
+            state.getUsers.counts = action.payload.counts
         },
         getUsersFaild: (state) => {
             state.getUsers.isFetching = false

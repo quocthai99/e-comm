@@ -1,7 +1,6 @@
 import axiosConfig from '../axiosConfig'
 import axios from 'axios'
 
-import {  getUsersFaild, getUsersStart, getUsersSuccess } from '../redux/user/userSlice'
 import { loginSuccess, getCurrentFaild, getCurrentStart, getCurrentSuccess } from '../redux/auth/authSlice'
 
 export const apiGetCurrent = async(accessToken, dispatch) => {
@@ -16,7 +15,6 @@ export const apiGetCurrent = async(accessToken, dispatch) => {
                 Authorization: `Bearer ${accessToken}`
             },
         })
-        console.log(response.data, '=> dispatch current')
         dispatch(getCurrentSuccess(response.data))
         
     } catch (error) {
@@ -28,7 +26,6 @@ export const apiRefresh = async() => {
     try {
         const response = await axios({
             method: 'post',
-            // url: `api/user/refresh-token`,
             url: `${process.env.REACT_APP_SERVER_URL}api/user/refresh-token`,
             withCredentials: true
         })
@@ -55,8 +52,7 @@ export const apiUpdateCurrent = async(accessToken, data, dispatch) => {
     }
 }
 
-export const apiGetUsers = async(accessToken, params, dispatch) => {
-    dispatch(getUsersStart())
+export const apiGetUsers = async(accessToken, params) => {
     try {
         const response = await axiosConfig({
             method: 'get',
@@ -66,10 +62,8 @@ export const apiGetUsers = async(accessToken, params, dispatch) => {
                 Authorization: `Bearer ${accessToken}`
             },
         })
-        dispatch(getUsersSuccess(response.data))
         return response.data
     } catch (error) {
-        dispatch(getUsersFaild())
         return error
     }
 }

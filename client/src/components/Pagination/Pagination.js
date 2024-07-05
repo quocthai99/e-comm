@@ -1,46 +1,59 @@
-import React, { useState } from 'react'
-import ReactPaginate from 'react-paginate';
+import React from 'react';
+import usePagination from '../../hook/usePagination';
 
-import { Item } from '../Pagination'
+const Pagination = ({ currentPage, totalCount, pageSize, onPageChange, siblingCount = 1 }) => {
+    const paginationRange = usePagination(currentPage, totalCount, siblingCount, pageSize);
 
-const items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+    if (currentPage === 0 || paginationRange.length < 2) {
+        return null;
+    }
 
-const Pagination = ({ itemsPerPage }) => {
-  // Here we use item offsets; we could also use page offsets
-  // following the API or data you're working with.
-  const [itemOffset, setItemOffset] = useState(0);
+    const onNext = () => {
+        onPageChange(currentPage + 1);
+    };
 
-  // Simulate fetching items from another resources.
-  // (This could be items from props; or items loaded in a local state
-  // from an API endpoint with useEffect and useState)
-  const endOffset = itemOffset + itemsPerPage;
-  console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-  const currentItems = items.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(items.length / itemsPerPage);
+    const onPrevious = () => {
+        onPageChange(currentPage - 1);
+    };
 
-  // Invoke when user click to request another page.
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % items.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
+    let lastPage = paginationRange[paginationRange.length - 1];
+    return (
+        <div className="flex items-center justify-end text-primary">
+            <div
+                onClick={onPrevious}
+                className={`px-5 py-3 border border-primary cursor-pointer hover:bg-hprimary hover:text-white ${
+                    currentPage === 1 && 'disabled'
+                }`}
+            >
+                Prev
+            </div>
+            {paginationRange.map((pageNumber) => {
+                if (pageNumber === '...') {
+                    return <div className="pagination-item dots">&#8230;</div>;
+                }
+
+                return (
+                    <div
+                        key={pageNumber}
+                        onClick={() => onPageChange(pageNumber)}
+                        className={`px-5 py-3 border border-primary cursor-pointer hover:bg-hprimary hover:text-white ${
+                            pageNumber === currentPage && 'bg-primary text-white'
+                        }`}
+                    >
+                        {pageNumber}
+                    </div>
+                );
+            })}
+            <div
+                onClick={onNext}
+                className={`px-5 py-3 border border-primary cursor-pointer hover:bg-hprimary hover:text-white ${
+                    currentPage === lastPage && 'disabled'
+                }`}
+            >
+                Next
+            </div>
+        </div>
     );
-    setItemOffset(newOffset);
-  };
+};
 
-  return (
-    <>
-      <Item currentItems={currentItems} />
-      <ReactPaginate
-        breakLabel="..."
-        nextLabel="next >"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={pageCount}
-        previousLabel="< previous"
-        renderOnZeroPageCount={null}
-      />
-    </>
-  );
-}
-
-export default Pagination
+export default Pagination;

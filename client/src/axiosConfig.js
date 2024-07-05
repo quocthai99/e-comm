@@ -18,14 +18,12 @@ instance.interceptors.request.use(
         if (decodeToken.exp < date.getTime() / 1000) {
             const response = await apiRefresh();
             const newAccessToken = response.newAccessToken;
-            console.log(newAccessToken, 'config new')
             const data = {
                 user: {
                     ...currentUser,
                 accessToken: newAccessToken
                 }
             };
-            console.log(data, '=> data config')
             store.dispatch(loginSuccess(data));
             config.headers['Authorization'] = `Bearer ${newAccessToken}`
         }

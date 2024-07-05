@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer } from 'redux-persist';
 
-import userSlice from './user/userSlice';
+// import userSlice from './user/userSlice';
 import authSlice from './auth/authSlice';
 
 const persistConfig = {
@@ -18,13 +18,14 @@ const authConfig = {
 // const userConfig = {
 //     ...persistConfig,
 //     key: 'user',
-//     whitelist: ['getCurrent'],
+//     whitelist: ['getUsers'],
 // };
 
 const store = configureStore({
     reducer: {
         auth: persistReducer(authConfig, authSlice),
-        user: userSlice,
+        // user: persistReducer(userConfig, userSlice),
+        // user: userSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

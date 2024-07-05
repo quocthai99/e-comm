@@ -12,6 +12,9 @@ import Personal from './pages/private/Personal';
 
 import Admin from './pages/admin/Admin';
 import ManageUser from './pages/admin/ManageUser';
+import ManageProduct from './pages/admin/ManageProduct/ManageProduct';
+import CreateProduct from './pages/admin/ManageProduct/CreateProduct';
+import Order from './pages/admin/Order';
 
 
 function App() {
@@ -30,6 +33,9 @@ function App() {
 
                 <Route path={path.ADMIN} element={<Admin />}>
                     <Route path={path.MANAGE_USER} element={<ManageUser />} />
+                    <Route path={path.MANAGE_PRODUCTS} element={<ManageProduct />} />
+                    <Route path={path.CREATE_PRODUCTS} element={<CreateProduct />} />
+                    <Route path={path.MANAGE_ORDER} element={<Order />} />
                 </Route>
             </Routes>
         </div>

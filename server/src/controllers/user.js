@@ -29,7 +29,6 @@ const register = asyncHandler(async (req, res) => {
 
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
-    console.log({ email, password })
     const user = await User.findOne({ email });
     if (!user) throw new Error('User is not existed! Please register')
     
@@ -55,10 +54,9 @@ const login = asyncHandler(async (req, res) => {
 const refreshToken = asyncHandler(async (req, res) => {
     const refreshToken = req.cookies.refreshToken
     if(!refreshToken) throw new Error('No refreshtoken in cookies. Please login')
-        console.log(refreshToken, '====refresh')
     jwt.verify(refreshToken, process.env.JWT_SECRET, async (err, decode) => {
         const user = await User.findOne({ _id: decode._id })
-        console.log(user, '=> user refresh')
+        
         if(user.refreshToken !== refreshToken) throw new Error('refresh token is not equal refresh token in database')
         if(err) throw new Error('Refreshtoken is wrong')
             
@@ -93,7 +91,6 @@ const deleteUser = asyncHandler(async (req, res) => {
     const { uid } = req.params
     if (!uid) throw new Error('User is not existed')
     const deletedUser = await User.findByIdAndDelete(uid)
-console.log(deletedUser, '==> deletedd User')
     if (!deletedUser) throw new Error('Delete failed')
     return res.status(200).json({
         status: true,
@@ -106,7 +103,7 @@ const getUsers = asyncHandler(async (req, res) => {
     const queryObj = { ...req.query }
     const excludedFields = ['page', 'limit', 'fields', 'sort']
     excludedFields.forEach(el => delete queryObj[el])
-
+    
     let queryString = JSON.stringify(queryObj)
     queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
     const query = JSON.parse(queryString)
@@ -118,15 +115,18 @@ const getUsers = asyncHandler(async (req, res) => {
                 {email: { $regex: queryObj.q, $options: 'i' }},
             ]
     }
-    
     let queries = User.find(query)
-
+    
     const page = req.query.page * 1 || 1
     const limit = req.query.limit * 1 || 10
     const skip = (page - 1) * limit
-
+    
     queries = queries.skip(skip).limit(limit)
-
+    console.log('page:', page)
+    console.log('limit:', limit)
+    console.log('query:', query)
+    console.log('==================')
+    
     const counts = await User.find(query).countDocuments()
     const users = await queries
     return res.status(200).json({
@@ -138,9 +138,7 @@ const getUsers = asyncHandler(async (req, res) => {
 
 const getUser = asyncHandler(async(req, res) => {
     const { _id } = req.user
-    console.log(_id, '=> id')
     const user = await User.findById(_id).select('-password -refreshToken')
-    console.log(user, '=> current')
     if(!user) throw new Error('User not found')
     return res.status(200).json({
         status: true,

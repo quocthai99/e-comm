@@ -7,8 +7,14 @@ const uploader = require('../config/cloudinary.config')
 
 const router = express.Router()
 
-router.post('/create-product', productControllers.createProduct)
+router.post('/create-product', uploader.fields([
+    {name: 'images', maxCount: 10},
+    {name: 'thumb', maxCount: 1}
+]) ,productControllers.createProduct)
 router.get('/get-products', productControllers.getProducts)
-router.post('/add-variant/:pid', productControllers.addVarriant)
+router.post('/add-variant/:pid', verifyAccessToken, isAdmin, uploader.fields([
+    {name: 'images', maxCount: 10},
+    {name: 'thumb', maxCount: 1}
+]) ,productControllers.addVarriant)
 
 module.exports = router

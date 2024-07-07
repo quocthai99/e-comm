@@ -4,14 +4,15 @@ import { useSelector } from 'react-redux';
 import { apiDeleteUser, apiGetUsers } from '../../../services/user';
 
 import SearchInput from '../../../components/SearchInput';
-import {EditUser} from '../layouts/Edit';
+import { EditUser } from '../layouts/Edit';
 import useDebounce from '../../../hook/useDebounce';
 import withBaseComponent from '../../../hocs/withBaseComponent';
 
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Pagination from '../../../components/Pagination';
+import Swal from 'sweetalert2';
 
-let pageSize = 5;
+let pageSize = 3;
 
 const ManageUser = ({ dispatch }) => {
     const { currentUser } = useSelector((state) => state.auth.login);
@@ -35,12 +36,29 @@ const ManageUser = ({ dispatch }) => {
     };
 
     const handleDeleteUser = async (uid) => {
-        const response = await apiDeleteUser(currentUser.accessToken, uid);
-        if (response.status) {
-            const deletedUser = usersData.filter((user) => user._id !== response.deletedUser._id);
-            setUsersData(deletedUser);
-            setCounts((prev) => prev - 1);
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const response = await apiDeleteUser(currentUser.accessToken, uid);
+                if (response.status) {
+                    const deletedUser = usersData.filter((user) => user._id !== response.deletedUser._id);
+                    setUsersData(deletedUser);
+                    setCounts((prev) => prev - 1);
+                }
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Your file has been deleted.',
+                    icon: 'success',
+                });
+            }
+        });
     };
 
     useEffect(() => {
@@ -52,7 +70,6 @@ const ManageUser = ({ dispatch }) => {
         fetchDataUsers(params);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [queriesDebounce, currentPage]);
-    console.log('re render')
 
     return (
         <div className="bg-white ">
@@ -83,47 +100,45 @@ const ManageUser = ({ dispatch }) => {
                     </thead>
                     <tbody className="divide-y divide-primary text-primary">
                         {usersData &&
-                            usersData
-                                .filter((user) => !user.isAdmin)
-                                .map((user, i) => {
-                                    return (
-                                        <tr key={user._id}>
-                                            <td className="p-3 text-sm text-primary whitespace-nowrap">
-                                                <span className="font-bold hover:underline">{i + 1}</span>
-                                            </td>
-                                            <td className="p-3 text-sm text-primary whitespace-nowrap">
-                                                <div>{user.email}</div>
-                                            </td>
-                                            <td className="p-3 text-sm text-primary whitespace-nowrap">
-                                                <div>{user.name}</div>
-                                            </td>
-                                            <td className="p-3 text-sm text-primary whitespace-nowrap">
-                                                <div>{user.phone}</div>
-                                            </td>
-                                            <td className="p-3 text-sm text-primary whitespace-nowrap">
-                                                <div>{!user.isAdmin && 'User'}</div>
-                                            </td>
-                                            <td className="p-3 text-sm text-primary whitespace-nowrap">
-                                                <div className="flex items-center justify-around">
-                                                    <div
-                                                        onClick={() => setEditUser(user)}
-                                                        className="cursor-pointer"
-                                                        title="Edit"
-                                                    >
-                                                        <FaEdit color="#339CDE" />
-                                                    </div>
-                                                    <div
-                                                        onClick={() => handleDeleteUser(user._id)}
-                                                        className="cursor-pointer"
-                                                        title="Remove"
-                                                    >
-                                                        <FaTrash color="orange" />
-                                                    </div>
+                            usersData.map((user, i) => {
+                                return (
+                                    <tr key={user._id}>
+                                        <td className="p-3 text-sm text-primary whitespace-nowrap">
+                                            <span className="font-bold hover:underline">{i + 1}</span>
+                                        </td>
+                                        <td className="p-3 text-sm text-primary whitespace-nowrap">
+                                            <div>{user.email}</div>
+                                        </td>
+                                        <td className="p-3 text-sm text-primary whitespace-nowrap">
+                                            <div>{user.name}</div>
+                                        </td>
+                                        <td className="p-3 text-sm text-primary whitespace-nowrap">
+                                            <div>{user.phone}</div>
+                                        </td>
+                                        <td className="p-3 text-sm text-primary whitespace-nowrap">
+                                            <div>{!user.isAdmin ? 'User' : 'Admin'}</div>
+                                        </td>
+                                        <td className="p-3 text-sm text-primary whitespace-nowrap">
+                                            <div className="flex items-center justify-around">
+                                                <div
+                                                    onClick={() => setEditUser(user)}
+                                                    className="cursor-pointer"
+                                                    title="Edit"
+                                                >
+                                                    <FaEdit color="#339CDE" />
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                                <div
+                                                    onClick={() => handleDeleteUser(user._id)}
+                                                    className="cursor-pointer"
+                                                    title="Remove"
+                                                >
+                                                    <FaTrash color="orange" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                     </tbody>
                 </table>
             </div>

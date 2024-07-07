@@ -1,38 +1,36 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
-
 import InputForm from '../../../../components/Input';
-import MarkDown from '../../../../components/MarkDown';
 import Button from '../../../../components/Button';
-import { apiCreateProduct } from '../../../../services/product';
 import { toBase64 } from '../../../../utils/func';
+import { apiAddVariant } from '../../../../services/product';
+import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2'
+import withBaseComponent from '../../../../hocs/withBaseComponent';
+import Loading from '../../../../components/Loading';
 
-const CreateProduct = () => {
-    const { currentUser } = useSelector((state) => state.auth.login);
-    console.log(currentUser);
-    const [payload, setPayload] = useState({
-        description: '',
-    });
+const EditVariant = ({ variant, setEditVariant, dispatch }) => {
     const [preview, setPreview] = useState({
         thumb: null,
         images: [],
     });
-
+    const { currentUser } = useSelector(state => state.auth.login)
+    const { isFetching } = useSelector(state => state.loading.isLoading)
+    
     const {
         register,
         handleSubmit,
         formState: { errors },
-        watch
+        watch,
+        reset
     } = useForm();
 
-    const changeValue = useCallback(
-        (e) => {
-            setPayload(e);
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [payload],
-    );
+    useEffect(() => {
+        reset({
+            name: variant.name
+        })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         if (watch('thumb') instanceof FileList && watch('thumb').length > 0) {
@@ -62,89 +60,75 @@ const CreateProduct = () => {
         setPreview((prev) => ({ ...prev, images: imagesPreview }));
     };
 
-    const handleCreateProduct = async (data) => {
-        const dataBody = { ...data, ...payload };
-        const formData = new FormData()
-        if(dataBody.thumb) {
-            formData.append('thumb', dataBody.thumb[0])
-            delete dataBody.thumb
-        } else  {
-            delete dataBody.thumb
+    const handleAddVariant = async (data) => {
+        if (data.name) delete data.name
+        const formData = new FormData();
+        if(data.thumb) {
+            formData.append('thumb', data.thumb[0])
+            delete data.thumb
+        } else {
+            delete data.thumb
         }
 
-        if(dataBody.images) {
-            for(let image of dataBody.images) {
-                formData.append('images', image)
-            }
-            delete dataBody.images
-        } else  {
-            delete dataBody.images
+        if (data.images) {
+            for (let image of data.images) formData.append('images', image);
+            delete data.images
+        } else {
+            delete data.images
         }
 
-        for(let data of Object.entries(dataBody)) {
-            formData.append(data[0], data[1])
+        for (let i of Object.entries(data)) {
+            formData.append(i[0], i[1]);
         }
-        console.log([...formData])
-        const response = await apiCreateProduct(currentUser.accessToken, formData);
-        console.log(response);
+        
+        const response = await apiAddVariant(formData, variant._id, currentUser.accessToken, dispatch);
+        if(response.status) {
+            Swal.fire(response.message, 'Success', 'success')
+            setEditVariant(null)
+        }
     };
 
     return (
-        <div className="bg-white">
-            <div className="text-primary mx-10">
-                <h1 className="text-3xl font-bold py-5 border-b border-primary ">
-                    <span>Create Products</span>
-                </h1>
-            </div>
-
-            <div className="m-10">
-                <form className="flex flex-col gap-5" onSubmit={handleSubmit(handleCreateProduct)}>
-                    <InputForm
-                        label="Product name"
-                        register={register}
-                        id="name"
-                        placeholder="Enter product name"
-                        errors={errors}
-                        validate={{
-                            required: 'this field required',
-                        }}
-                    />
-                    <div className="grid grid-cols-3 gap-5">
+        <div className="fixed inset-0 bg-overlay z-10 flex justify-center items-center">
+            {isFetching && <div className='fixed inset-0 z-10 flex justify-center items-center'><Loading /></div>}
+            <div className="bg-white max-w-[700px] p-5 flex">
+                <form onSubmit={handleSubmit(handleAddVariant)}>
+                    <div className="flex flex-col gap-5">
                         <InputForm
-                            label="Brand"
+                            label="Name"
+                            disabled
                             register={register}
-                            id="brand"
+                            id="name"
                             placeholder="Enter product name"
                             errors={errors}
                             validate={{
                                 required: 'this field required',
                             }}
                         />
-                        <InputForm
-                            label="Price"
-                            register={register}
-                            id="price"
-                            placeholder="Enter product price"
-                            errors={errors}
-                            validate={{
-                                required: 'this field required',
-                            }}
-                        />
-                        <InputForm
-                            label="Category"
-                            register={register}
-                            id="category"
-                            placeholder="Enter product name"
-                            errors={errors}
-                            validate={{
-                                required: 'this field required',
-                            }}
-                        />
-                    </div>
+                        <div className="grid grid-cols-2 gap-5">
+                            <InputForm
+                                label="Price"
+                                register={register}
+                                id="price"
+                                placeholder="Enter product price"
+                                errors={errors}
+                                validate={{
+                                    required: 'this field required',
+                                }}
+                            />
+                            <InputForm
+                                label="Color"
+                                register={register}
+                                id="color"
+                                placeholder="Enter product color"
+                                errors={errors}
+                                validate={{
+                                    required: 'this field required',
+                                }}
+                            />
+                        </div>
 
-                    <MarkDown name="description" changeValue={changeValue} label="Description" />
-
-                    <div>
+                        <div>
                             <label
                                 className="block mb-2 text-sm font-medium text-primary dark:text-white"
                                 htmlFor="thumb"
@@ -185,12 +169,18 @@ const CreateProduct = () => {
                             </div>
                         )}
 
-                    <div className='flex'><Button fullW>Create Product</Button></div>
-                    
+                        <div className="flex justify-center gap-5 ">
+                            <Button>Add Variant</Button>
+
+                            <Button onClick={() => setEditVariant(null)} cusColor="bg-[#fe2c55] hover:bg-[#c94d66]">
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
     );
 };
 
-export default CreateProduct;
+export default withBaseComponent(EditVariant);

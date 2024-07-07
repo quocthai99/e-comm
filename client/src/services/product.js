@@ -1,4 +1,5 @@
 import axiosConfig from '../axiosConfig'
+import { isLoaded, isLoadingStart } from '../redux/loading/loadingSlice'
 
 
 export const apiCreateProduct = async(accessToken, data) => {
@@ -34,16 +35,18 @@ export const apiGetProducts = async(accessToken) => {
     }
 }
 
-export const apiAddVariant = async(accessToken, pid) => {
+export const apiAddVariant = async(data, pid, accessToken, dispatch) => {
+    dispatch(isLoadingStart())
     try {
         const response = await axiosConfig({
             method: 'post',
             url: `api/product/add-variant/${pid}`,
+            data,
             headers: {
                 Authorization: `Bearer ${accessToken}`
             },
         })
-        
+        dispatch(isLoaded())
         return response.data
     } catch (error) {
         return error

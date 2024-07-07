@@ -9,10 +9,11 @@ import withBaseComponent from '../../../hocs/withBaseComponent'
 import { toBase64 } from '../../../utils/func'
 import { apiUpdateCurrent } from '../../../services/user';
 import avatar from '../../../assets/avatar.png'
+import Loading from '../../../components/Loading';
 
 const Personal = ({ dispatch }) => {
     const { user } = useSelector(state => state.auth.getCurrent)
-    const { currentUser } = useSelector(state => state.auth.login)
+    const { currentUser, isFetching } = useSelector(state => state.auth.login)
     const [preview, setPreview] = useState(null)
     
     const {
@@ -60,6 +61,7 @@ const Personal = ({ dispatch }) => {
     };
     return (
         <div className="bg-white h-screen">
+            {isFetching && <div className='fixed bg-overlay inset-0 flex items-center justify-center'><Loading /></div>}
             <div className="text-primary mx-10">
                 <h1 className="text-3xl font-bold py-5 border-b border-primary ">
                     <span>Personal</span>

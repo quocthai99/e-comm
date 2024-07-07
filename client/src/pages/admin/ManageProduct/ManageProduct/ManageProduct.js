@@ -4,34 +4,38 @@ import { useSelector } from 'react-redux';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { MdOutlineColorLens } from "react-icons/md";
 import SearchInput from '../../../../components/SearchInput';
-import { EditProduct } from '../../layouts/Edit';
+import { EditProduct, EditVariant } from '../../layouts/Edit';
 
 const ManageProduct = () => {
     const { currentUser } = useSelector(state => state.auth.login)
     const [products, setProducts] = useState(null)
     const [editProduct, setEditProduct] = useState(null)
+    const [editVariant, setEditVariant] = useState(null)
     const [SearchProduct, setSearchProduct] = useState({
         q: ''
     })
-
+console.log('re render')
     const fetchDataProducts = async() => {
         const response = await apiGetProducts(currentUser.accessToken)
+        console.log('response:', response)
         if (response.status) {
             setProducts(response.products)
         }
     }
 
-    const handleDeleteUser = async (pid) => {
+    const handleDeleteProduct = async (pid) => {
         console.log(pid)
     }
 
     useEffect(() => {
         fetchDataProducts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
         <div className="bg-white">
             {editProduct && <EditProduct product={editProduct} />}
+            {editVariant && <EditVariant variant={editVariant} setEditVariant={setEditVariant} />}
             <div className="text-primary mx-10">
                 <h1 className="text-3xl font-bold py-5 border-b border-primary ">
                     <span>Create Products</span>
@@ -50,11 +54,12 @@ const ManageProduct = () => {
                     <thead className="bg-primary border-b-2 border-hprimary text-white">
                         <tr>
                             <th className="w-10 p-3 text-sm font-semibold tracking-wide text-left">#</th>
+                            <th className="w-20 p-3 text-sm font-semibold tracking-wide text-left">Thumb</th>
                             <th className="p-3 text-sm font-semibold tracking-wide text-left">Name</th>
-                            <th className="w-52 p-3 text-sm font-semibold tracking-wide text-left">Category</th>
-                            <th className="w-52 p-3 text-sm font-semibold tracking-wide text-left">Brand</th>
-                            <th className="w-52 p-3 text-sm font-semibold tracking-wide text-left">Price</th>
-                            <th className="w-52 p-3 text-sm font-semibold tracking-wide text-left">Action</th>
+                            <th className="w-32 p-3 text-sm font-semibold tracking-wide text-left">Category</th>
+                            <th className="w-32 p-3 text-sm font-semibold tracking-wide text-left">Brand</th>
+                            <th className="w-32 p-3 text-sm font-semibold tracking-wide text-left">Price</th>
+                            <th className="w-32 p-3 text-sm font-semibold tracking-wide text-left">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-primary text-primary">
@@ -63,6 +68,9 @@ const ManageProduct = () => {
                                 <tr key={product._id}>
                                             <td className="p-3 text-sm text-primary whitespace-nowrap">
                                                 <span className="font-bold hover:underline">{i + 1}</span>
+                                            </td>
+                                            <td className="p-3 text-sm text-primary whitespace-nowrap">
+                                                <img src={product.thumb} alt='thumb' className='w-10 h-10 object-cover' />
                                             </td>
                                             <td className="p-3 text-sm text-primary whitespace-nowrap">
                                                 <div>{product.name}</div>
@@ -86,14 +94,14 @@ const ManageProduct = () => {
                                                         <FaEdit size={20} color="#339CDE" />
                                                     </div>
                                                     <div
-                                                        onClick={() => setEditProduct(product)}
+                                                        onClick={() => setEditVariant(product)}
                                                         className="cursor-pointer"
                                                         title="Variant"
                                                     >
                                                         <MdOutlineColorLens size={20} color="green" />
                                                     </div>
                                                     <div
-                                                        onClick={() => handleDeleteUser(product._id)}
+                                                        onClick={() => handleDeleteProduct(product._id)}
                                                         className="cursor-pointer"
                                                         title="Remove"
                                                     >

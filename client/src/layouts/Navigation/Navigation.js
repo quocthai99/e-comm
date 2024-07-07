@@ -23,7 +23,7 @@ const nav = [
 const Navigation = ({navigate}) => {
     return (
         <div className="border-b">
-            <div className="w-main h-[70px] mx-auto flex items-center gap-5">
+            <div className="xl:w-main h-[70px] mx-auto flex items-center gap-5">
               {nav.map(el => (
                 <Link key={el.name} to={el.path} className='flex flex-col items-center hover:text-primary cursor-pointer'>
                   <img src={el.icon} alt='icon' className='w-5 h-5 object-cover' />

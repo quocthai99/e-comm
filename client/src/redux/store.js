@@ -4,6 +4,7 @@ import { persistReducer } from 'redux-persist';
 
 // import userSlice from './user/userSlice';
 import authSlice from './auth/authSlice';
+import loadingSlice from './loading/loadingSlice';
 
 const persistConfig = {
     storage,
@@ -26,6 +27,7 @@ const store = configureStore({
         auth: persistReducer(authConfig, authSlice),
         // user: persistReducer(userConfig, userSlice),
         // user: userSlice
+        loading: loadingSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

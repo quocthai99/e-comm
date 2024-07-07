@@ -1,7 +1,7 @@
 import axiosConfig from '../axiosConfig'
 import axios from 'axios'
 
-import { loginSuccess, getCurrentFaild, getCurrentStart, getCurrentSuccess } from '../redux/auth/authSlice'
+import { loginSuccess, getCurrentFaild, getCurrentStart, getCurrentSuccess, loginStart } from '../redux/auth/authSlice'
 
 export const apiGetCurrent = async(accessToken, dispatch) => {
     dispatch(getCurrentStart())
@@ -9,7 +9,6 @@ export const apiGetCurrent = async(accessToken, dispatch) => {
     try {
         const response = await axiosConfig({
             method: 'get',
-            // url: `${process.env.REACT_APP_SERVER_URL}api/user/detail-user`,
             url: `api/user/detail-user`,
             headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -36,6 +35,7 @@ export const apiRefresh = async() => {
 }
 
 export const apiUpdateCurrent = async(accessToken, data, dispatch) => {
+    dispatch(loginStart())
     try {
         const response = await axiosConfig({
             method: 'put',

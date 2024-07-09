@@ -6,6 +6,7 @@ import Public from './pages/public/Public';
 import Home from './pages/public/Home';
 import Login from './pages/public/Login';
 import Register from './pages/public/Register';
+import DetailProduct from './pages/public/DetailProduct';
 
 import Private from './pages/private/Private';
 import Personal from './pages/private/Personal';
@@ -15,7 +16,7 @@ import ManageUser from './pages/admin/ManageUser';
 import ManageProduct from './pages/admin/ManageProduct/ManageProduct';
 import CreateProduct from './pages/admin/ManageProduct/CreateProduct';
 import Order from './pages/admin/Order';
-
+import Product from './pages/public/Product';
 
 function App() {
     return (
@@ -25,6 +26,8 @@ function App() {
                     <Route path={path.HOME} element={<Home />} />
                     <Route path={path.LOGIN} element={<Login />} />
                     <Route path={path.REGISTER} element={<Register />} />
+                    <Route path={path.PRODUCTS} element={<Product />} />
+                    <Route path={path.DETAIL_PRODUCT__CATE__ID} element={<DetailProduct />} />
                 </Route>
 
                 <Route path={path.PRIVATE} element={<Private />}>

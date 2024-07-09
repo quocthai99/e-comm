@@ -3,6 +3,10 @@ const path = {
     HOME: '',
     LOGIN: 'login',
     REGISTER: 'register',
+    PRODUCTS: 'products',
+    PRODUCTS__CATE: 'products/:category',
+    DETAIL_PRODUCT__CATE__ID: 'products/:category/:name/:id',
+
 
     // member
     PRIVATE: 'private',

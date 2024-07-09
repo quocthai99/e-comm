@@ -67,25 +67,25 @@ const Header = () => {
     console.log(currentUser);
     return (
         <div className="w-full bg-primary text-white">
-            <div className="xl:w-main h-[70px] xl:mx-auto md:mx-10 flex items-center justify-between">
+            <div className="xl:w-main h-[70px] xl:mx-auto sm:mx-10 flex items-center justify-between">
                 {/* Responsive */}
-                <div className="md:block lg:hidden cursor-pointer ">
+                <div className="sm:block lg:hidden cursor-pointer ">
                     <AiOutlineMenu size={20} />
                 </div>
-                <div className="md:flex lg:hidden items-center">
+                <div className="sm:flex lg:hidden items-center">
                     <img src={logo} alt="logo" />
                 </div>
-                <div className="md:block lg:hidden cursor-pointer ">
+                <div className="sm:block lg:hidden cursor-pointer ">
                     <FaShoppingCart size={20} />
                 </div>
 
                 {/* Main layout */}
-                <div className="lg:flex md:hidden items-center">
+                <div className="lg:flex sm:hidden items-center">
                     <img src={logo} alt="logo" />
                     <SearchInput placeholder="Search something" />
                 </div>
 
-                <div className="lg:flex md:hidden">
+                <div className="lg:flex sm:hidden">
                     <Menu items={dataMenu}>
                         {currentUser ? (
                             <div className="flex items-center gap-[10px] pr-5 cursor-pointer border-r border-[#70a5d0]">

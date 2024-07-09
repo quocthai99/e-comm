@@ -3,18 +3,17 @@ import { FaChevronRight } from 'react-icons/fa';
 import { Link, useParams } from 'react-router-dom';
 import useBreadcrumbs from 'use-react-router-breadcrumbs';
 
-
 const Breadcrumbs = () => {
     const params = useParams();
-
+    
     const routes = [
         { path: '/', breadcrumb: 'Home' },
-        { path: '/collections', breadcrumb: 'Collections' },
+        { path: '/products', breadcrumb: 'Products' },
         {
-            path: '/collections/:category',
+            path: '/products/:category',
             breadcrumb: params.category && params.category.slice(0, 1).toUpperCase() + params.category.slice(1),
         },
-        { path: '/collections/:category/:title', breadcrumb: params.title },
+        { path: '/products/:category/:name', breadcrumb: params.name },
     ];
 
     const breadcrumbs = useBreadcrumbs(routes);

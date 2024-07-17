@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
 import withBaseComponent from '../../../hocs/withBaseComponent'
 
 import Breadcrumbs from '../../../layouts/Breadcrumbs';
-import InputForm from '../../../components/Input';
+import {InputForm} from '../../../components/Input';
 import Button from '../../../components/Button/Button';
 
 import path from '../../../utils/path';

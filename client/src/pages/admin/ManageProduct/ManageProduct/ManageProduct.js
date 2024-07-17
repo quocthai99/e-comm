@@ -34,7 +34,7 @@ console.log('re render')
 
     return (
         <div className="bg-white">
-            {editProduct && <EditProduct product={editProduct} />}
+            {editProduct && <EditProduct product={editProduct} setEditProduct={setEditProduct} />}
             {editVariant && <EditVariant variant={editVariant} setEditVariant={setEditVariant} />}
             <div className="text-primary mx-10">
                 <h1 className="text-3xl font-bold py-5 border-b border-primary ">

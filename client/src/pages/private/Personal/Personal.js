@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
-import InputForm from '../../../components/Input';
+import {InputForm} from '../../../components/Input';
 import Button from '../../../components/Button';
 import withBaseComponent from '../../../hocs/withBaseComponent'
 

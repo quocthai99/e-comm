@@ -5,6 +5,7 @@ import { persistReducer } from 'redux-persist';
 // import userSlice from './user/userSlice';
 import authSlice from './auth/authSlice';
 import loadingSlice from './loading/loadingSlice';
+import cartSlice from './cart/CartSlice';
 
 const persistConfig = {
     storage,
@@ -14,6 +15,11 @@ const authConfig = {
     ...persistConfig,
     key: 'auth',
     whitelist: ['login', 'getCurrent'],
+};
+const cartConfig = {
+    ...persistConfig,
+    key: 'cart',
+    whitelist: ['cart'],
 };
 
 // const userConfig = {
@@ -25,9 +31,11 @@ const authConfig = {
 const store = configureStore({
     reducer: {
         auth: persistReducer(authConfig, authSlice),
+        // auth: authSlice,
         // user: persistReducer(userConfig, userSlice),
-        // user: userSlice
-        loading: loadingSlice
+        // cart: cartSlice,
+        cart: persistReducer(cartConfig, cartSlice),
+        loading: loadingSlice,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

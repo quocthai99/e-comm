@@ -1,7 +1,8 @@
 import axiosConfig from '../axiosConfig'
 import axios from 'axios'
 
-import { loginSuccess, getCurrentFaild, getCurrentStart, getCurrentSuccess, loginStart } from '../redux/auth/authSlice'
+import { loginSuccess, getCurrentFaild, getCurrentStart, getCurrentSuccess, loginStart, addCartSuccess } from '../redux/auth/authSlice'
+import { addItem } from '../redux/cart/CartSlice'
 
 export const apiGetCurrent = async(accessToken, dispatch) => {
     dispatch(getCurrentStart())
@@ -77,6 +78,38 @@ export const apiDeleteUser = async(accessToken, uid) => {
                 Authorization: `Bearer ${accessToken}`
             },
         })
+        return response.data
+    } catch (error) {
+        return error
+    }
+}
+
+export const apiAddToCart = async(accessToken, dispatch, data) => {
+    try {
+        const response = await axiosConfig({
+            method: 'put',
+            url: `api/user/add-cart`,
+            data,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+        })
+        dispatch(addItem(response.data.userCart.cart))
+    } catch (error) {
+        return error
+    }
+}
+
+export const apiRemoveCart = async(accessToken, dispatch, pid) => {
+    try {
+        const response = await axiosConfig({
+            method: 'delete',
+            url: `api/user/remove-cart/${pid}`,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+        })
+        dispatch(getCurrentSuccess(response.data))
         return response.data
     } catch (error) {
         return error

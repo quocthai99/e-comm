@@ -23,6 +23,9 @@ const initialState = {
         user: null,
         error: false
     },
+    addToCart: {
+        cart: []
+    }
 }
 
 const authSlice = createSlice({
@@ -56,7 +59,7 @@ const authSlice = createSlice({
         logoutStart: (state) => {
             state.logout.isFetching = true
         },
-        logoutSuccess: (state, action) => {
+        logoutSuccess: (state) => {
             state.logout.isFetching = false
             state.login.currentUser = null
             state.getCurrent.user = null
@@ -81,8 +84,11 @@ const authSlice = createSlice({
             state.getCurrent.success = false
             state.getCurrent.error = true
         },
+        // addCartSuccess: (state, action) => {
+        //     state.addToCart.cart = action.payload.userCart.cart
+        // },
     }
 })
 
-export const { logoutStart, logoutSuccess, logoutFailed, registerStart, registerSuccess, registerFailed, loginStart, loginSuccess, loginFailed, getCurrentStart, getCurrentSuccess, getCurrentFaild } = authSlice.actions
+export const { addCartSuccess, logoutStart, logoutSuccess, logoutFailed, registerStart, registerSuccess, registerFailed, loginStart, loginSuccess, loginFailed, getCurrentStart, getCurrentSuccess, getCurrentFaild } = authSlice.actions
 export default authSlice.reducer

@@ -17,6 +17,7 @@ import ManageProduct from './pages/admin/ManageProduct/ManageProduct';
 import CreateProduct from './pages/admin/ManageProduct/CreateProduct';
 import Order from './pages/admin/Order';
 import Product from './pages/public/Product';
+import Cart from './pages/public/Cart';
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                     <Route path={path.HOME} element={<Home />} />
                     <Route path={path.LOGIN} element={<Login />} />
                     <Route path={path.REGISTER} element={<Register />} />
+                    <Route path={path.CART} element={<Cart />} />
                     <Route path={path.PRODUCTS} element={<Product />} />
                     <Route path={path.DETAIL_PRODUCT__CATE__ID} element={<DetailProduct />} />
                 </Route>

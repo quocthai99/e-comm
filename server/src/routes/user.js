@@ -12,6 +12,8 @@ router.post('/login', userControllers.login)
 
 router.get('/users', [verifyAccessToken, isAdmin], userControllers.getUsers)
 router.get('/detail-user',verifyAccessToken, userControllers.getUser)
+router.put('/add-cart',verifyAccessToken, userControllers.addToCart)
+router.delete('/remove-cart',verifyAccessToken, userControllers.removeCart)
 router.put('/update-current',verifyAccessToken, uploader.single('avatar') ,userControllers.updateCurrent)
 router.post('/refresh-token', userControllers.refreshToken)
 router.post('/logout', verifyAccessToken, userControllers.logout)

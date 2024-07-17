@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import InputForm from '../../../../components/Input';
+import {InputForm} from '../../../../components/Input';
 import Button from '../../../../components/Button';
 import { toBase64 } from '../../../../utils/func';
 import { apiAddVariant } from '../../../../services/product';

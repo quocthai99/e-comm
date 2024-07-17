@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import logo from '../../assets/logo_digital.png';
@@ -9,6 +9,7 @@ import withBaseComponent from '../../hocs/withBaseComponent';
 
 import SearchInput from '../../components/SearchInput';
 import { Menu } from '../../components/Popper/Menu';
+import YourCart from '../../pages/public/layouts/YourCart';
 
 const MENU_ITEMS = [
     {
@@ -57,6 +58,9 @@ let dataMenu;
 
 const Header = () => {
     const { currentUser } = useSelector((state) => state.auth.login);
+    const cart = useSelector((state) => state.cart.cart);
+    const [showYourCart, setShowYourCart] = useState(false)
+
     if (currentUser && currentUser.isAdmin) {
         dataMenu = MENU_ITEMS_ADMIN;
     } else if (currentUser && !currentUser.isAdmin) {
@@ -64,9 +68,10 @@ const Header = () => {
     } else if (!currentUser) {
         dataMenu = MENU_ITEMS;
     }
-    console.log(currentUser);
+    
     return (
         <div className="w-full bg-primary text-white">
+            {showYourCart && <YourCart setShowYourCart={setShowYourCart} />}
             <div className="xl:w-main h-[70px] xl:mx-auto sm:mx-10 flex items-center justify-between">
                 {/* Responsive */}
                 <div className="sm:block lg:hidden cursor-pointer ">
@@ -106,9 +111,10 @@ const Header = () => {
                         )}
                     </Menu>
 
-                    <div className="flex items-center gap-[10px] pl-5 cursor-pointer ">
+                    <div onClick={() => setShowYourCart(true)} className="flex items-center gap-[10px] pl-5 cursor-pointer relative ">
                         <FaShoppingCart size={20} />
-                        <span>Cart</span>
+                        <span >Cart</span>
+                        <span className='absolute px-2 top-[-10px] left-8 rounded-full bg-red-400 '>{cart?.length || 0}</span>
                     </div>
                 </div>
                 
